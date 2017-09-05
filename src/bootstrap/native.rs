@@ -224,9 +224,18 @@ impl Step for Llvm {
                   .define("CMAKE_CXX_COMPILER", sanitize_cc(cxx));
             }
 
+            let mut cxx_flags = build.cflags(target).join(" ");
+            if target.contains("apple") {
+                // `futimens` is introduced in macOS 10.13. The header file that supports 10.13 is
+                // included in Xcode 9. If we try to build using Xcode 9 on 10.12, `librust_llvm`
+                // will fail with a linker error.
+                cxx_flags += " -UHAVE_FUTIMENS";
+            }
+
             cfg.build_arg("-j").build_arg(build.jobs().to_string());
             cfg.define("CMAKE_C_FLAGS", build.cflags(target).join(" "));
-            cfg.define("CMAKE_CXX_FLAGS", build.cflags(target).join(" "));
+            cfg.define("CMAKE_CXX_FLAGS", cxx_flags);
+
         };
 
         configure_compilers(&mut cfg);

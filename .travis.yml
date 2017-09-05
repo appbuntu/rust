@@ -13,7 +13,7 @@ matrix:
   include:
     # Images used in testing PR and try-build should be run first.
     - env: IMAGE=x86_64-gnu-llvm-3.7 ALLOW_PR=1 RUST_BACKTRACE=1
-    - env: IMAGE=dist-x86_64-linux DEPLOY=1 ALLOW_TRY=1
+    - env: IMAGE=dist-x86_64-linux DEPLOY=1 ALLOW_TRY=0
 
     # "alternate" deployments, these are "nightlies" but don't have assertions
     # turned on, they're deployed to a different location primarily for projects
@@ -37,7 +37,7 @@ matrix:
     # OSX builders running tests, these run the full test suite.
     #
     # Note that the compiler is compiled to target 10.8 here because the Xcode
-    # version that we're using, 8.2, cannot compile LLVM for OSX 10.7.
+    # version that we're using, 9.0, cannot compile LLVM for OSX 10.7.
     - env: >
         RUST_CHECK_TARGET=check
         RUST_CONFIGURE_ARGS="--build=x86_64-apple-darwin --enable-sanitizers --enable-profiler"
@@ -46,8 +46,9 @@ matrix:
         SCCACHE_ERROR_LOG=/tmp/sccache.log
         MACOSX_DEPLOYMENT_TARGET=10.8
         MACOSX_STD_DEPLOYMENT_TARGET=10.7
+        ALLOW_TRY=1
       os: osx
-      osx_image: xcode8.2
+      osx_image: xcode9
     - env: >
         RUST_CHECK_TARGET=check
         RUST_CONFIGURE_ARGS=--build=i686-apple-darwin
@@ -56,8 +57,9 @@ matrix:
         SCCACHE_ERROR_LOG=/tmp/sccache.log
         MACOSX_DEPLOYMENT_TARGET=10.8
         MACOSX_STD_DEPLOYMENT_TARGET=10.7
+        ALLOW_TRY=1
       os: osx
-      osx_image: xcode8.2
+      osx_image: xcode9
 
     # OSX builders producing releases. These do not run the full test suite and
     # just produce a bunch of artifacts.
